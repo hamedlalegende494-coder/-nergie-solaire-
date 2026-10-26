@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Héliosoin – Maintenance solaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4f8;--surface:#fff;--ink:#12324a;--muted:#5b7083;--line:#d3e0e9;--sun:#f5b700;--sun-ink:#3d2e00;--panel:#14507a;--ok:#1f8a5b;--warn:#c2410c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e2233;--surface:#16344b;--ink:#e8f1f7;--muted:#9bb3c5;--line:#2a4d68;--sun:#f5b700;--sun-ink:#3d2e00;--panel:#6fb4e0;--ok:#4fd199;--warn:#ff9a63;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e2233;--surface:#16344b;--ink:#e8f1f7;--muted:#9bb3c5;--line:#2a4d68;--panel:#6fb4e0;--ok:#4fd199;--warn:#ff9a63;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+header h1{font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.1;font-weight:800;margin:8px 0 8px;letter-spacing:-.02em}
+header p{color:var(--muted);margin:0 0 20px;max-width:52ch}
+.brand{font-weight:800;color:var(--panel)}
+nav{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:20px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:5}
+nav button{flex:1;border:0;background:transparent;color:var(--muted);font:600 .95rem inherit;font-family:inherit;padding:10px 6px;border-radius:9px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--sun);color:var(--sun-ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--panel);outline-offset:2px}
+section[hidden]{display:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.services{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.svc{text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:12px;font-family:inherit;cursor:pointer}
+.svc b{display:block;font-size:1rem}.svc span{font-size:.85rem;color:var(--muted)}
+.svc[aria-pressed="true"]{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 14%,var(--surface))}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input,select{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{display:flex;gap:10px;align-items:center;font-weight:400;margin-top:14px}
+.check input{width:auto}
+.quote{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding:14px;border-radius:12px;background:var(--panel);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .quote{color:#0e2233}}
+.quote small{display:block;opacity:.85}
+.quote strong{font-size:1.8rem;font-weight:800}
+.btn{border:0;background:var(--sun);color:var(--sun-ink);font:700 1rem inherit;font-family:inherit;padding:12px 18px;border-radius:10px;cursor:pointer;width:100%;margin-top:14px}
+.btn.small{width:auto;margin:0;padding:8px 12px;font-size:.85rem;background:transparent;border:1px solid var(--line);color:var(--ink)}
+.list{display:grid;gap:12px}
+.item{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.item h3{margin:0 0 2px;font-size:1.05rem}
+.item p{margin:0;color:var(--muted);font-size:.9rem}
+.tag{display:inline-block;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:99px;margin-top:8px}
+.tag.plan{background:color-mix(in srgb,var(--sun) 25%,transparent);color:var(--ink)}
+.tag.done{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.bar{height:8px;border-radius:99px;background:var(--line);margin:10px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok)}
+.bar i.soon{background:var(--warn)}
+.empty{text-align:center;color:var(--muted);padding:28px 12px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">Héliosoin</div>
+  <h1>Vos panneaux solaires, entretenus sans y penser.</h1>
+  <p>Réservez un nettoyage, une inspection ou une réparation, puis suivez vos interventions et vos garanties au même endroit.</p>
+</header>
+
+<nav role="tablist" aria-label="Sections">
+  <button role="tab" id="t-book" aria-selected="true" data-tab="book">Réserver</button>
+  <button role="tab" id="t-jobs" aria-selected="false" data-tab="jobs">Interventions</button>
+  <button role="tab" id="t-warr" aria-selected="false" data-tab="warr">Garanties</button>
+</nav>
+
+<section id="book" class="card" aria-labelledby="t-book">
+  <div class="services" id="services"></div>
+  <div class="row">
+    <div><label for="panels">Nombre de panneaux</label><input id="panels" type="number" min="1" max="200" value="12"></div>
+    <div><label for="date">Date souhaitée</label><input id="date" type="date"></div>
+  </div>
+  <label for="city">Ville</label>
+  <input id="city" placeholder="Ex. : Toulouse" autocomplete="address-level2">
+  <label class="check"><input id="thermo" type="checkbox"> Ajouter une inspection thermique des cellules (+60 €)</label>
+  <div class="quote" aria-live="polite">
+    <div><small>Estimation, déplacement inclus</small><strong id="price">0 €</strong></div>
+    <small id="detail"></small>
+  </div>
+  <button class="btn" id="reserve">Réserver cette intervention</button>
+</section>
+
+<section id="jobs" hidden aria-labelledby="t-jobs"><div class="list" id="jobList"></div></section>
+
+<section id="warr" hidden aria-labelledby="t-warr">
+  <div class="list" id="warrList"></div>
+  <form class="card" id="warrForm" style="margin-top:12px">
+    <strong>Ajouter une garantie</strong>
+    <label for="wn">Équipement</label><input id="wn" required placeholder="Ex. : Batterie">
+    <div class="row">
+      <div><label for="wy">Année d’achat</label><input id="wy" type="number" min="2000" max="2030" value="2024" required></div>
+      <div><label for="wd">Durée (ans)</label><input id="wd" type="number" min="1" max="40" value="10" required></div>
+    </div>
+    <button class="btn" type="submit">Enregistrer la garantie</button>
+  </form>
+</section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const SERVICES=[
+ {id:"clean",name:"Nettoyage",desc:"Lavage doux, sans produit agressif",base:70,per:6},
+ {id:"inspect",name:"Inspection",desc:"Contrôle visuel et électrique",base:110,per:2},
+ {id:"inverter",name:"Onduleur",desc:"Diagnostic et réparation",base:190,per:0},
+ {id:"replace",name:"Remplacement",desc:"Panneau défectueux, pose incluse",base:240,per:0}
+];
+const $=s=>document.querySelector(s);
+let state={service:"clean",jobs:[],warranties:[]};
+const KEY="heliosoin-v1";
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d){state.jobs=d.jobs||[];state.warranties=d.warranties||[]}}catch(e){}
+ if(!state.warranties.length)state.warranties=[{n:"Panneaux solaires",y:2021,d:25},{n:"Onduleur",y:2018,d:10},{n:"Pose et étanchéité",y:2021,d:2}]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({jobs:state.jobs,warranties:state.warranties}))}catch(e){}}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400)}
+const eur=n=>n.toLocaleString("fr-FR")+" €";
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function renderServices(){
+ $("#services").innerHTML=SERVICES.map(s=>`<button class="svc" data-id="${s.id}" aria-pressed="${s.id===state.service}"><b>${s.name}</b><span>${s.desc}</span></button>`).join("")}
+function quote(){
+ const s=SERVICES.find(x=>x.id===state.service);
+ const n=Math.max(1,parseInt($("#panels").value)||1);
+ let p=s.base+s.per*n;
+ if(s.per&&p<s.base+s.per*5)p=s.base+s.per*5;
+ if($("#thermo").checked)p+=60;
+ $("#price").textContent=eur(p);
+ $("#detail").textContent=s.name+" · "+n+" panneau"+(n>1?"x":"");
+ return p}
+function renderJobs(){
+ const today=new Date().toISOString().slice(0,10);
+ const el=$("#jobList");
+ if(!state.jobs.length){el.innerHTML='<div class="card empty">Aucune intervention pour l’instant. Réservez la première depuis l’onglet Réserver.</div>';return}
+ el.innerHTML=state.jobs.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(j=>{
+  const done=j.date<today;
+  return `<div class="card item"><div><h3>${esc(j.name)}</h3><p>${esc(j.city||"Ville à préciser")} · ${new Date(j.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})}</p><p>${j.panels} panneaux · ${eur(j.price)}</p><span class="tag ${done?"done":"plan"}">${done?"Terminée":"Planifiée"}</span></div>${done?"":`<button class="btn small" data-cancel="${j.id}">Annuler</button>`}</div>`}).join("")}
+function renderWarr(){
+ const yr=new Date().getFullYear();
+ $("#warrList").innerHTML=state.warranties.map((w,i)=>{
+  const end=w.y+w.d,left=end-yr,pct=Math.min(100,Math.max(0,(yr-w.y)/w.d*100)),exp=left<=0,soon=left>0&&left<=1;
+  return `<div class="card"><div class="item"><div><h3>${esc(w.n)}</h3><p>Achat ${w.y} · garantie ${w.d} ans · jusqu’en ${end}</p></div><button class="btn small" data-del="${i}" aria-label="Supprimer ${esc(w.n)}">Retirer</button></div><div class="bar"><i class="${soon||exp?"soon":""}" style="width:${pct}%"></i></div><p>${exp?"Garantie expirée":soon?"Expire cette année, faites contrôler l’équipement":left+" ans de garantie restants"}</p></div>`}).join("")}
+
+function show(tab){
+ ["book","jobs","warr"].forEach(t=>{$("#"+t).hidden=t!==tab;$("#t-"+t).setAttribute("aria-selected",t===tab)});
+ if(tab==="jobs")renderJobs();if(tab==="warr")renderWarr()}
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+$("#services").onclick=e=>{const b=e.target.closest(".svc");if(!b)return;state.service=b.dataset.id;renderServices();quote()};
+["#panels","#thermo"].forEach(s=>$(s).addEventListener("input",quote));
+$("#reserve").onclick=()=>{
+ const date=$("#date").value,city=$("#city").value.trim();
+ if(!date){toast("Choisissez une date d’intervention");$("#date").focus();return}
+ if(!city){toast("Indiquez la ville de l’installation");$("#city").focus();return}
+ const s=SERVICES.find(x=>x.id===state.service);
+ state.jobs.push({id:Date.now(),name:s.name+($("#thermo").checked?" + thermique":""),city,date,panels:Math.max(1,parseInt($("#panels").value)||1),price:quote()});
+ save();toast("Intervention réservée");show("jobs")};
+$("#jobList").onclick=e=>{const b=e.target.closest("[data-cancel]");if(!b)return;state.jobs=state.jobs.filter(j=>j.id!=b.dataset.cancel);save();renderJobs();toast("Intervention annulée")};
+$("#warrList").onclick=e=>{const b=e.target.closest("[data-del]");if(!b)return;state.warranties.splice(+b.dataset.del,1);save();renderWarr();toast("Garantie retirée")};
+$("#warrForm").onsubmit=e=>{e.preventDefault();state.warranties.push({n:$("#wn").value.trim(),y:+$("#wy").value,d:+$("#wd").value});save();$("#wn").value="";renderWarr();toast("Garantie enregistrée")};
+
+load();
+const d=new Date();d.setDate(d.getDate()+7);$("#date").value=d.toISOString().slice(0,10);$("#date").min=new Date().toISOString().slice(0,10);
+renderServices();quote();
+</script>
+</body>
+</html>
